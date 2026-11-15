@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SYS } from '../data/sys.js';
-import { T, esc, md } from '../lib.js';
+import { T, esc, renderAI } from '../lib.js';
 
 const INTRO = 'Ask about any CAT-2 topic. The tutor sees the topic you have open. First use asks you to sign in to a free Puter account (the model cost is covered by your Puter account, no API key needed).';
 const puterOK = () => typeof puter !== 'undefined' && puter.ai;
@@ -87,13 +87,13 @@ export function useTutor(cur) {
         for await (const p of r) {
           if (p && p.text) {
             acc += p.text;
-            patch(outId, { html: md(acc) });
+            patch(outId, { html: renderAI(acc) });
           }
         }
       } else {
         const c = r?.message?.content;
         acc = typeof c === 'string' ? c : Array.isArray(c) ? c.map((x) => x.text || '').join('') : String(r);
-        patch(outId, { html: md(acc) });
+        patch(outId, { html: renderAI(acc) });
       }
       hist.current.push({ role: 'user', content: text }, { role: 'assistant', content: acc });
     } catch (e) {

@@ -128,7 +128,7 @@ details.qa .ans{padding:6px 16px 14px}
 .msg.u{background:var(--mark);align-self:flex-end;color:var(--ink)}
 .msg.a{background:var(--card)}
 .msg.sys{border-style:dashed;color:var(--graphite);background:transparent}
-.msg pre{font-size:.78rem} .msg p{margin:.4em 0} .msg h3,.msg h4{margin:.8em 0 .2em;font-size:1rem}
+.msg pre{font-size:.78rem;overflow-x:auto;margin:.5em 0} .msg ul,.msg ol{margin:.4em 0;padding-left:1.3em} .msg table{font-size:.85rem;margin:.5em 0;display:block;overflow-x:auto} .msg th,.msg td{padding:3px 8px;border:1px solid var(--line);text-align:left} .msg code{font-family:var(--mono);font-size:.85em} .msg p{margin:.4em 0} .msg h3,.msg h4{margin:.8em 0 .2em;font-size:1rem}
 .ai form{border-top:2px solid var(--ink);padding:10px 14px;display:flex;flex-direction:column;gap:8px}
 .ai textarea{width:100%;min-height:64px;max-height:180px;resize:vertical;border:1.5px solid var(--ink);background:var(--card);border-radius:3px;padding:8px;font:.95rem var(--body)}
 .ai .opts{display:flex;gap:8px;align-items:center}

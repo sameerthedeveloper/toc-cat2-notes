@@ -87,3 +87,34 @@ export function md(s) {
     })
     .join('');
 }
+
+/* ---- tutor replies: HTML from the model, sanitised with an allowlist ---- */
+const OK_TAGS = new Set(['P', 'H3', 'H4', 'UL', 'OL', 'LI', 'B', 'STRONG', 'I', 'EM', 'CODE', 'PRE', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'SUB', 'SUP', 'BR', 'HR', 'DIV', 'SPAN']);
+const DROP_TAGS = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'META', 'SVG', 'MATH', 'FORM', 'INPUT', 'BUTTON', 'TEXTAREA', 'SELECT', 'TEMPLATE']);
+
+function clean(node) {
+  for (const c of [...node.childNodes]) {
+    if (c.nodeType === 3) {
+      if (!node.closest || !node.closest('pre')) c.nodeValue = tex(c.nodeValue);
+    } else if (c.nodeType === 1) {
+      if (DROP_TAGS.has(c.tagName)) c.remove();
+      else {
+        clean(c);
+        if (OK_TAGS.has(c.tagName)) [...c.attributes].forEach((a) => c.removeAttribute(a.name));
+        else c.replaceWith(...c.childNodes);
+      }
+    } else c.remove();
+  }
+}
+
+export function sanitizeHtml(html) {
+  const doc = new DOMParser().parseFromString('<body>' + html, 'text/html');
+  clean(doc.body);
+  return doc.body.innerHTML;
+}
+
+/** HTML reply -> sanitised HTML; anything that is not HTML falls back to the Markdown renderer. */
+export function renderAI(s) {
+  const t = s.replace(/^\s*```(?:html)?\s*\n?/i, '').replace(/\n?```\s*$/, '');
+  return /<\/?(p|div|h[1-6]|ul|ol|li|b|strong|table|pre|code|br)\b/i.test(t) ? sanitizeHtml(t) : md(s);
+}
