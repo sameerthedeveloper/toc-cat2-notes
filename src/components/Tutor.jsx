@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SYS } from '../data/sys.js';
-import { T, esc, renderAI } from '../lib.js';
+import { T, esc, renderAI, tex } from '../lib.js';
 
 const INTRO = 'Ask about any CAT-2 topic. The tutor sees the topic you have open. First use asks you to sign in to a free Puter account (the model cost is covered by your Puter account, no API key needed).';
 const puterOK = () => typeof puter !== 'undefined' && puter.ai;
@@ -71,14 +71,14 @@ export function useTutor(cur) {
   const ask = async (text, show) => {
     if (busy || !text.trim()) return;
     setOpen(true);
-    add('u', esc(show || text));
+    add('u', esc(tex(show || text)));
     if (!puterOK()) {
       add('sys', esc('Puter.js is not available here. Open the site in a normal browser tab (or host it) with internet access, then sign in with your Puter account.'));
       return;
     }
     setBusy(true);
     const outId = add('a', '<span class="mini">thinking…</span>');
-    const msgsToSend = [{ role: 'system', content: SYS + '\n\n' + ctxText() }, ...hist.current.slice(-8), { role: 'user', content: text }];
+    const msgsToSend = [{ role: 'system', content: SYS + '\n\n' + ctxText() }, ...hist.current.slice(-8), { role: 'user', content: tex(text) }];
     const opt = model ? { model, stream: true } : { stream: true };
     let acc = '';
     try {
