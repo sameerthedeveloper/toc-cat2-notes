@@ -112,7 +112,7 @@ export default function App() {
             <button className="btn" id="menu" aria-label="Open topics" onClick={() => setRailOpen(true)}>Topics</button>
             <div className="crumb">{crumb}</div>
             <button className="btn sm" onClick={() => setTheme(theme === 'night' ? 'day' : 'night')}>{theme === 'night' ? 'Day paper' : 'Night paper'}</button>
-            <button className="btn sm" onClick={tutor.acctClick}>{tutor.acct.label}</button>
+            <button className="btn sm acct-top" onClick={tutor.acctClick}>{tutor.acct.label}</button>
             <button className="btn pri" onClick={() => tutor.setOpen(!tutor.open)}>Ask tutor</button>
           </div>
           <article className="sheet" key={cur}>

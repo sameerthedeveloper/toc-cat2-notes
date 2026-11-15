@@ -169,3 +169,55 @@ details.qa .ans{padding:6px 16px 14px}
 .vids a{color:var(--blue)}
 @media print{.vids{display:none}}
 
+
+/* ===== mobile ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+main{min-width:0}
+.shell{overflow-x:clip}
+@media(max-width:900px){
+  .rail{height:100dvh;padding-bottom:calc(40px + env(safe-area-inset-bottom));padding-left:max(18px,env(safe-area-inset-left))}
+  .ai{height:100dvh;width:100vw;border-left:0}
+  .ai form{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+}
+@media(max-width:640px){
+  body{font-size:16px}
+  .top{flex-wrap:wrap;gap:6px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
+  .top .crumb{display:none}
+  .acct-top{display:none}
+  .top .btn.sm{max-width:none}
+  .top .btn{padding:6px 10px}
+  .top .btn.sm{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top .btn.pri{margin-left:auto}
+  .sheet{padding:18px 14px 80px 26px}.sheet::before{left:10px}
+  .sheet h1{font-size:clamp(1.6rem,8vw,2.1rem);overflow-wrap:anywhere}
+  .sheet h2{font-size:1.25rem}
+  .pager{flex-direction:column;align-items:stretch}
+  .pager .btn,.pager a.btn{text-align:center}
+  .pager span{flex-direction:column}
+  .cell{width:26px;height:26px;font-size:.8rem}
+  .wg{padding-inline:12px}
+  .wg .row{gap:8px}
+  .wg .row label{flex:1 1 140px}
+  .wg input[type=text]{width:100%}
+  .vlist button{padding:10px 8px}
+  details.qa summary{padding:10px 10px}
+  .msg{font-size:.92rem}
+}
+/* touch devices: bigger targets, 16px inputs so iOS does not zoom on focus */
+@media(pointer:coarse){
+  .btn{min-height:40px}
+  .btn.sm{min-height:36px;padding:6px 12px}
+  .nav a{padding:10px 8px}
+  .ai .qk button{padding:7px 13px;font-size:.82rem}
+  input,select,textarea,.rail input[type=search],.ai textarea,.ai select{font-size:16px}
+  .btn:hover{transform:none;box-shadow:2px 2px 0 var(--ink)}
+  input[type=range]{height:28px}
+}
+.acct-in{display:none;max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){
+  .acct-in{display:inline-block}
+  .ai header b{flex:none}.ai header .acct-in{margin-left:auto}
+  .wg label{min-width:0;max-width:100%}
+  .wg select{max-width:100%;min-width:0}
+  .wg .row label:has(select){flex:1 1 100%}
+}

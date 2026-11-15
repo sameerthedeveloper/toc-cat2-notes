@@ -142,6 +142,7 @@ export default function Tutor({ tutor }) {
     <section className={'ai' + (open ? ' open' : '')} aria-label="AI tutor">
       <header>
         <b>AI tutor</b>
+        <button className="btn sm acct-in" type="button" onClick={tutor.acctClick}>{tutor.acct.label}</button>
         <button className="btn sm" type="button" onClick={clear}>Clear</button>
         <button className="btn sm" type="button" aria-label="Close tutor" onClick={() => setOpen(false)}>Close</button>
       </header>
