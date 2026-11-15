@@ -37,20 +37,48 @@ T.forEach((t) => {
 export { T };
 export const HOME_ORDER = ['m3-1', 'm3-2', 'm3-3', 'm4-1', 'm4-2', 'm4-3', 'm4-4', 'm4-5', 'm4-6', 'm5-1', 'm5-3', 'm5-4', 'm5-5', 'm5-6'];
 
+/* LaTeX -> unicode, for when a model ignores "no LaTeX". Unknown commands are left untouched. */
+const TEX = {
+  Rightarrow: '⇒', Leftarrow: '⇐', Leftrightarrow: '⇔', rightarrow: '→', leftarrow: '←', to: '→', implies: '⇒', iff: '⇔',
+  varepsilon: 'ε', epsilon: 'ε', cdots: '⋯', ldots: '…', dots: '…', ge: '≥', geq: '≥', le: '≤', leq: '≤', neq: '≠', ne: '≠',
+  mid: '|', in: '∈', notin: '∉', cup: '∪', cap: '∩', subseteq: '⊆', times: '×', cdot: '·', circ: '∘', emptyset: '∅', infty: '∞',
+  Sigma: 'Σ', sigma: 'σ', delta: 'δ', Delta: 'Δ', gamma: 'γ', Gamma: 'Γ', alpha: 'α', beta: 'β', lambda: 'λ', omega: 'ω', pi: 'π',
+  vdash: '⊢', forall: '∀', exists: '∃', land: '∧', lor: '∨', neg: '¬', star: '*', ast: '*', langle: '⟨', rangle: '⟩',
+  quad: '  ', qquad: '    ',
+};
+const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹', n: 'ⁿ', i: 'ⁱ', '+': '⁺', '-': '⁻' };
+const SUB = { 0: '₀', 1: '₁', 2: '₂', 3: '₃', 4: '₄', 5: '₅', 6: '₆', 7: '₇', 8: '₈', 9: '₉' };
+const script = (s, map, mark) => (s.length && [...s].every((c) => map[c]) ? [...s].map((c) => map[c]).join('') : mark + (s.length > 1 ? '(' + s + ')' : s));
+
+export function tex(s) {
+  if (!s.includes('\\')) return s;
+  return s
+    .replace(/\\\[|\\\]|\\\(|\\\)/g, '')
+    .replace(/\\(?:text|mathrm|mathit|textbf|mathbf|operatorname)\{([^{}]*)\}/g, '$1')
+    .replace(/\\\{/g, '\u0001').replace(/\\\}/g, '\u0002')
+    .replace(/\^\{([^{}]*)\}|\^([A-Za-z0-9+-])/g, (_, a, b) => script(a ?? b, SUP, '^'))
+    .replace(/_\{([^{}]*)\}|_([0-9])/g, (_, a, b) => script(a ?? b, SUB, '_'))
+    .replace(/\\([A-Za-z]+)/g, (m, c) => TEX[c] ?? m)
+    .replace(/\\[,;:! ]/g, ' ')
+    .replace(/\u0001/g, '{').replace(/\u0002/g, '}');
+}
+
 /* minimal markdown for tutor replies */
 export function md(s) {
   return s
     .split(/```/)
     .map((p, i) => {
       if (i % 2) return `<pre><code>${esc(p.replace(/^\w*\n/, ''))}</code></pre>`;
-      const h = esc(p).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+      const h = esc(tex(p)).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
       return h
         .split('\n')
         .map((l) =>
-          /^#{1,4}\s/.test(l)
+          /^\s*([-*_]){3,}\s*$/.test(l)
+            ? '<hr class="rule">'
+            : /^#{1,4}\s/.test(l)
             ? `<h4>${l.replace(/^#+\s/, '')}</h4>`
-            : /^\s*[-*]\s/.test(l)
-            ? `<div>• ${l.replace(/^\s*[-*]\s/, '')}</div>`
+            : /^\s*[-*•]\s/.test(l)
+            ? `<div>• ${l.replace(/^\s*[-*•]\s/, '')}</div>`
             : l.trim() === ''
             ? '<div style="height:.4em"></div>'
             : `<div>${l}</div>`
