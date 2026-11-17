@@ -35,7 +35,6 @@ T.forEach((t) => {
 });
 
 export { T };
-export const HOME_ORDER = ['m3-1', 'm3-2', 'm3-3', 'm4-1', 'm4-2', 'm4-3', 'm4-4', 'm4-5', 'm4-6', 'm5-1', 'm5-3', 'm5-4', 'm5-5', 'm5-6'];
 
 /* LaTeX -> unicode, for when a model ignores "no LaTeX". Unknown commands are left untouched. */
 const TEX = {

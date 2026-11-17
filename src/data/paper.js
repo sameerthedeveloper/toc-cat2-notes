@@ -1,91 +1,281 @@
-const PAPER=[
-{part:'Part A · 5 × 2 = 10 marks',qs:[
-{n:'1',m:2,q:'State the conditions of the pumping lemma.',a:`<p>If L is regular there is a constant p ≥ 1 such that every w ∈ L with |w| ≥ p can be split w = xyz with</p><p>(1) |xy| ≤ p &nbsp; (2) |y| ≥ 1 &nbsp; (3) xyⁱz ∈ L for all i ≥ 0.</p><p>(For CFLs: z = uvwxy, |vwx| ≤ p, |vx| ≥ 1, uvⁱwxⁱy ∈ L for all i ≥ 0.)</p>`},
-{n:'2',m:2,q:'Define ambiguous grammar.',a:`<p>A CFG G is ambiguous if some string w ∈ L(G) has two or more distinct parse trees (equivalently, two leftmost derivations or two rightmost derivations).</p><p>Example: E → E+E | E*E | id is ambiguous for id+id*id.</p>`},
-{n:'3',m:2,q:'Differentiate regular grammar and context-free grammar.',a:`<table><tr><th></th><th>Regular grammar</th><th>Context-free grammar</th></tr>
-<tr><td>Production form</td><td>A → aB, A → a, A → ε (right-linear) or A → Ba (left-linear)</td><td>A → α, α ∈ (V∪T)*</td></tr>
-<tr><td>Right side</td><td>At most one variable, at the end (or start)</td><td>Any mix of variables and terminals</td></tr>
-<tr><td>Accepted by</td><td>Finite automaton</td><td>Pushdown automaton</td></tr>
-<tr><td>Example</td><td>a*b*  (S → aS | B, B → bB | ε)</td><td>aⁿbⁿ  (S → aSb | ε)</td></tr>
-<tr><td>Power</td><td>Regular ⊂ CFL, cannot count</td><td>Can match nested pairs</td></tr></table>`},
-{n:'4',m:2,q:'How is the pushdown automaton related to the context-free grammar?',a:`<p>They are equivalent in power. A language is context-free iff some PDA accepts it.</p><p><b>CFG → PDA:</b> one-state PDA with δ(q,ε,A) = {(q,β) : A → β} and δ(q,a,a) = {(q,ε)}. The stack simulates a leftmost derivation.</p><p><b>PDA → CFG:</b> variables [pXq] with productions built from each move.</p>`},
-{n:'5',m:2,q:'List any two programming techniques used in designing Turing machines.',a:`<p><b>1. Storage in the finite control:</b> states are pairs [q, d] so the machine remembers a symbol.</p><p><b>2. Multiple tracks:</b> each cell holds a tuple, e.g. data and a check mark. (Others: shifting over, subroutines.)</p>`}
-]},
-{part:'Part B · 2 × 16 = 32 marks',qs:[
-{n:'6a (i)',m:10,q:'Convert the given grammar into Greibach Normal Form: A → BC ; B → CA | a ; C → AB | b. (The paper prints the last line as “B → AB | b”; it can only be C → AB | b, so that is assumed. Say so in the exam.)',a:`<p><b>Step 0.</b> No ε, unit or useless rules. Order A₁ = A, A₂ = B, A₃ = C.</p>
-<p><b>Step 1: enforce j &gt; i.</b> A → BC ✓. B → CA | a ✓. C → AB | b ✗ (C → A…). Substitute A → BC: C → BCB | b. Substitute B → CA | a: C → CACB | aCB | b.</p>
-<p><b>Step 2: remove left recursion (Lemma 2).</b> α = ACB; β = aCB, b.<br>C → aCB | b | aCBZ | bZ<br>Z → ACB | ACBZ</p>
-<p><b>Step 3: back-substitute into B.</b> B → CA | a:<br>B → aCBA | bA | aCBZA | bZA | a</p>
-<p><b>Step 4: back-substitute into A.</b> A → BC:<br>A → aCBAC | bAC | aCBZAC | bZAC | aC</p>
-<p><b>Step 5: back-substitute into Z.</b> Let P = {aCBAC, bAC, aCBZAC, bZAC, aC} (the A-rules). Z → ACB | ACBZ becomes<br>Z → p CB | p CBZ for every p ∈ P.</p>
-<p><b>Final GNF</b></p><pre><code>A → aCBAC | bAC | aCBZAC | bZAC | aC
-B → aCBA  | bA  | aCBZA  | bZA  | a
-C → aCB | b | aCBZ | bZ
-Z → aCBACCB | bACCB | aCBZACCB | bZACCB | aCCB
-  | aCBACCBZ | bACCBZ | aCBZACCBZ | bZACCBZ | aCCBZ</code></pre><p>Every right side starts with a terminal followed by variables. ∎ (I checked all three start symbols against the original grammar for strings up to length 9.)</p>`},
-{n:'6a (ii)',m:6,q:'Show that L = {wwᴿ | w ∈ {a,b}*} is not regular.',a:`<p><b>1.</b> Assume L regular with pumping length p.<br><b>2.</b> Choose w = aᵖbbaᵖ = (aᵖb)(aᵖb)ᴿ ∈ L, |w| ≥ p.<br><b>3.</b> |xy| ≤ p, so y = aᵏ with 1 ≤ k ≤ p, inside the first a-block.<br><b>4.</b> Pump i = 2: xy²z = aᵖ⁺ᵏbbaᵖ.<br><b>5.</b> Every string uuᴿ is a palindrome. aᵖ⁺ᵏbbaᵖ is not: its reverse is aᵖbbaᵖ⁺ᵏ, which differs since k ≥ 1. So xy²z ∉ L.<br><b>6.</b> Contradiction, so L is not regular. ∎</p>`},
-{n:'6b (i)',m:8,q:'OR · Obtain an unambiguous grammar for E → E+E | E−E | E*E | E/E | (E) | I ; I → a | b | c, and show the derivation for (a+b)*(a−b).',a:`<p><b>Why ambiguous.</b> No precedence or associativity: a+b*c has two trees.</p><p><b>Unambiguous grammar</b> (layers give precedence: * and / bind tighter than + and −; left recursion gives left associativity):</p><pre><code>E → E + T | E − T | T
-T → T * F | T / F | F
-F → ( E ) | I
-I → a | b | c</code></pre>
-<p><b>Leftmost derivation of (a+b)*(a−b):</b></p><pre><code>E ⇒ T ⇒ T*F ⇒ F*F ⇒ (E)*F ⇒ (E+T)*F ⇒ (T+T)*F ⇒ (F+T)*F
-  ⇒ (I+T)*F ⇒ (a+T)*F ⇒ (a+F)*F ⇒ (a+I)*F ⇒ (a+b)*F
-  ⇒ (a+b)*(E) ⇒ (a+b)*(E−T) ⇒ (a+b)*(T−T) ⇒ (a+b)*(F−T)
-  ⇒ (a+b)*(I−T) ⇒ (a+b)*(a−T) ⇒ (a+b)*(a−F) ⇒ (a+b)*(a−I) ⇒ (a+b)*(a−b)</code></pre>
-<p><b>Tree shape.</b> Root E → T. T → T * F: left T → F → ( E ), the E → E+T giving a and b; right F → ( E ), the E → E−T giving a and b. Each string now has exactly one tree, so the grammar is unambiguous.</p>`},
-{n:'6b (ii)',m:8,q:'OR · Describe the properties of regular languages.',a:`<p><b>1. Closure properties (with proof idea)</b></p>
-<table><tr><th>Operation</th><th>Reason</th></tr><tr><td>Union, concatenation, star</td><td>Regular expressions R₁+R₂, R₁R₂, R₁*</td></tr><tr><td>Complement</td><td>Complete DFA, swap final and non-final states</td></tr><tr><td>Intersection, difference</td><td>Product DFA (accept when both accept); L₁−L₂ = L₁∩L̄₂</td></tr><tr><td>Reversal</td><td>Reverse arrows, swap start and finals</td></tr><tr><td>Homomorphism, inverse homomorphism, quotient</td><td>Substitute in the RE; simulate DFA on h(a)</td></tr></table>
-<p><b>2. Decision properties:</b> membership (run the DFA), emptiness (is a final state reachable), finiteness (cycle on a path to a final state), equivalence (minimize both and compare), containment (L₁∩L̄₂ = ∅).</p>
-<p><b>3. Pumping lemma:</b> every regular language has a pumping length p; used to show non-regularity (e.g. aⁿbⁿ).</p>
-<p><b>4. Myhill–Nerode:</b> L is regular iff it has finitely many distinguishable classes; the number equals the states of the minimal DFA.</p>
-<p><b>5. Other facts:</b> every finite language is regular; regular languages are equivalent to DFA, NFA, ε-NFA, regular expressions and regular grammars; not closed under infinite union.</p>`},
-{n:'7a',m:16,q:'Construct CFG for (i) {0²ⁿ1ᵐ | n ≥ 0, m ≥ 0}, (ii) {wwᴿ | w ∈ {a,b}*}, (iii) {w ∈ {0,1}* | w contains at least one occurrence of 101}, (iv) strings of a’s and b’s with equal numbers of a’s and b’s. (4 marks each)',a:`<p><b>(i) 0²ⁿ1ᵐ</b><br><code>S → AB ; A → 00A | ε ; B → 1B | ε</code><br>A makes an even number of 0s, B any number of 1s. Check: 001 = S ⇒ AB ⇒ 00AB ⇒ 00B ⇒ 001B ⇒ 001.</p>
-<p><b>(ii) wwᴿ (even palindromes)</b><br><code>S → aSa | bSb | ε</code><br>Check abba: S ⇒ aSa ⇒ abSba ⇒ abba.</p>
-<p><b>(iii) contains 101</b><br><code>S → X 101 X ; X → 0X | 1X | ε</code><br>X generates any string over {0,1}, so S generates (anything)·101·(anything). Check 01011: X=0, 101, X=1.</p>
-<p><b>(iv) equal number of a’s and b’s</b><br><code>S → aSbS | bSaS | ε</code><br>Each a is matched with a b, either of them first, and the rest is again balanced. Check abba: S ⇒ aSbS ⇒ a·bSaS·bS … ⇒ abba. (Alternative: S → aSb | bSa | SS | ε.)</p>
-<p>All four grammars were checked by computer against the language definitions for strings up to length 8.</p>`},
-{n:'7b (i)',m:8,q:'OR · Convert to CNF: S → a | aA | B ; A → aBB | ε ; B → Aa | b.',a:`<p><b>Step 1, new start.</b> S is not on any right side, so no S₀ is needed.</p>
-<p><b>Step 2, remove ε.</b> Nullable: A only (S is not nullable, so ε ∉ L). Delete A → ε and add rules with A removed:<br>S → a | aA | B<br>A → aBB<br>B → Aa | a | b</p>
-<p><b>Step 3, remove unit S → B.</b> Copy B’s rules: S → a | aA | Aa | b ; A → aBB ; B → Aa | a | b.</p>
-<p><b>Step 4, useless symbols.</b> A, B, S all generate strings and are reachable. None removed.</p>
-<p><b>Step 5, terminals in long rules.</b> Add T → a.<br>S → a | b | TA | AT<br>A → TBB<br>B → AT | a | b</p>
-<p><b>Step 6, binarize.</b> A → TBB becomes A → TD, D → BB.</p>
-<p><b>Final CNF</b></p><pre><code>S → a | b | TA | AT
-A → TD
-D → BB
-B → AT | a | b
-T → a</code></pre><p>Test “aaaa”: S ⇒ TA ⇒ aA ⇒ aTD ⇒ aaD ⇒ aaBB ⇒ aaaB ⇒ aaaa ✓ (also checked by computer for all strings up to length 9).</p>`},
-{n:'7b (ii)',m:8,q:'OR · Explain the pumping lemma for context-free languages and its applications.',a:`<p><b>Statement.</b> If L is a CFL there is p ≥ 1 such that every z ∈ L with |z| ≥ p can be written z = uvwxy with (1) |vwx| ≤ p, (2) |vx| ≥ 1, (3) uvⁱwxⁱy ∈ L for all i ≥ 0.</p>
-<p><b>Why it holds.</b> A parse tree of a long string (in CNF) is deep, so some variable A repeats on a root-to-leaf path. The upper A generates vwx, the lower A generates w. Repeating or removing the part between them pumps v and x together.</p>
-<p><b>Use (proof by contradiction).</b> Assume L is a CFL; pick z ∈ L with |z| ≥ p; consider every position of vwx (it is shorter than p, so it touches at most two adjacent blocks); show some i gives a string outside L.</p>
-<p><b>Applications.</b></p><ul><li>{aⁿbⁿcⁿ} is not a CFL (z = aᵖbᵖcᵖ).</li><li>{ww} is not a CFL (z = aᵖbᵖaᵖbᵖ).</li><li>{aⁱbʲcᵏ | i &lt; j &lt; k} and {a^(n²)} are not CFLs.</li><li>It shows the CFL class is not closed under intersection or complement.</li></ul>
-<p><b>Limit.</b> It only proves a language is <em>not</em> context-free; it cannot prove one is.</p>`}
-]},
-{part:'Part C · 1 × 8 = 8 marks',qs:[
-{n:'8a',m:8,q:'Demonstrate a PDA for L = {wcwᴿ | w ∈ (a+b)*} and show the instantaneous descriptions for the string “aabcbaa”.',a:`<p><b>Idea.</b> Push each symbol of w. The marker c tells the machine where the middle is (so it is deterministic). Then pop one symbol per matching input symbol. Accept when only Z is left.</p>
-<p><b>Definition.</b> P = ({q0,q1,q2}, {a,b,c}, {a,b,Z}, δ, q0, Z, {q2}).</p>
-<pre><code>δ(q0, a, Z) = {(q0, aZ)}     δ(q0, b, Z) = {(q0, bZ)}
-δ(q0, a, a) = {(q0, aa)}     δ(q0, b, a) = {(q0, ba)}
-δ(q0, a, b) = {(q0, ab)}     δ(q0, b, b) = {(q0, bb)}
-δ(q0, c, Z) = {(q1, Z)}      δ(q0, c, a) = {(q1, a)}   δ(q0, c, b) = {(q1, b)}
-δ(q1, a, a) = {(q1, ε)}      δ(q1, b, b) = {(q1, ε)}
-δ(q1, ε, Z) = {(q2, Z)}</code></pre>
-<p><b>Instantaneous descriptions for aabcbaa</b> (stack top on the left):</p>
-<pre><code>(q0, aabcbaa, Z) ⊢ (q0, abcbaa, aZ) ⊢ (q0, bcbaa, aaZ) ⊢ (q0, cbaa, baaZ)
-⊢ (q1, baa, baaZ) ⊢ (q1, aa, aaZ) ⊢ (q1, a, aZ) ⊢ (q1, ε, Z) ⊢ (q2, ε, Z)</code></pre>
-<p>q2 is final and the input is consumed, so aabcbaa is accepted. ∎ (Run it in the PDA simulator: machine “wcwᴿ”.)</p>`},
-{n:'8b',m:8,q:'OR · Design a Turing machine for L = {0ⁿ1ⁿ | n ≥ 0}. Show that 0011 is accepted.',a:`<p><b>Idea.</b> Replace the leftmost 0 by X, move right to the first 1, replace it by Y, move back to X and repeat. When no 0 is left, check that no 1 is left. For n = 0 (empty input) accept at once.</p>
-<p><b>Definition.</b> M = ({q0,q1,q2,q3,q4}, {0,1}, {0,1,X,Y,B}, δ, q0, B, {q4}).</p>
-<table><tr><th>State</th><th>0</th><th>1</th><th>X</th><th>Y</th><th>B</th></tr>
-<tr><td>q0</td><td>(q1,X,R)</td><td>–</td><td>–</td><td>(q3,Y,R)</td><td>(q4,B,R)</td></tr>
-<tr><td>q1</td><td>(q1,0,R)</td><td>(q2,Y,L)</td><td>–</td><td>(q1,Y,R)</td><td>–</td></tr>
-<tr><td>q2</td><td>(q2,0,L)</td><td>–</td><td>(q0,X,R)</td><td>(q2,Y,L)</td><td>–</td></tr>
-<tr><td>q3</td><td>–</td><td>–</td><td>–</td><td>(q3,Y,R)</td><td>(q4,B,R)</td></tr></table>
-<p><b>Instantaneous descriptions for 0011</b> (state written just before the scanned cell):</p>
-<pre><code>[q0]0011 ⊢ X[q1]011 ⊢ X0[q1]11 ⊢ X[q2]0Y1 ⊢ [q2]X0Y1 ⊢ X[q0]0Y1
-⊢ XX[q1]Y1 ⊢ XXY[q1]1 ⊢ XX[q2]YY ⊢ X[q2]XYY ⊢ XX[q0]YY
-⊢ XXY[q3]Y ⊢ XXYY[q3]B ⊢ XXYYB[q4]</code></pre>
-<p>The machine enters the final state q4, so 0011 is accepted. ∎ (Run it in the TM simulator.)</p>`}
-]}
+/* CSD 3102 Artificial Intelligence Techniques · CAT-2 · 28 Oct 2025 · 50 marks · 90 min
+   Answers are written the way a student should write them in the exam. */
+export const PAPER = [
+  {
+    part: 'Part A: 5 × 2 = 10 marks',
+    qs: [
+      {
+        n: '1', m: 2, kl: 'CO3 KL1',
+        q: 'Define knowledge-based agent.',
+        a: `<p>A <b>knowledge-based agent</b> keeps an explicit <b>knowledge base (KB)</b>, a set of sentences in a formal language, and uses an <b>inference engine</b> to derive new sentences and choose its action.</p>
+<p>It is <b>told</b> what it perceives and <b>asked</b> what to do: <code>TELL(KB, percept)</code>, <code>action ← ASK(KB, query)</code>, <code>TELL(KB, action)</code>. Changing the KB changes the behaviour without rewriting the program.</p>`,
+      },
+      {
+        n: '2', m: 2, kl: 'CO3 KL2',
+        q: 'Distinguish between forward chaining and backward chaining.',
+        a: `<table><tr><th></th><th>Forward chaining</th><th>Backward chaining</th></tr>
+<tr><td>Direction</td><td>Data-driven: facts to conclusions</td><td>Goal-driven: query back to facts</td></tr>
+<tr><td>Starts from</td><td>Known facts</td><td>The goal (query)</td></tr>
+<tr><td>Process</td><td>Fire every rule whose premises hold, add its conclusion, repeat</td><td>Find rules whose conclusion is the goal, then prove their premises as sub-goals</td></tr>
+<tr><td>Effort</td><td>May derive many irrelevant facts</td><td>Explores only rules relevant to the goal</td></tr>
+<tr><td>Suits</td><td>Monitoring, deriving all consequences</td><td>Diagnosis, answering one question</td></tr></table>`,
+      },
+      {
+        n: '3', m: 2, kl: 'CO3 KL1',
+        q: 'State the purpose of predicate logic.',
+        a: `<p>Predicate (first-order) logic lets an agent represent <b>objects, their properties and the relations between them</b>, and make statements about <b>all</b> (∀) or <b>some</b> (∃) objects, which propositional logic cannot do.</p>
+<p>Example: <code>∀x Man(x) → Mortal(x)</code> is one sentence for every man. In the Wumpus world one sentence <code>∀x,y Breezy(x,y) ⇔ ∃a,b Adjacent([x,y],[a,b]) ∧ Pit([a,b])</code> replaces 16 propositional ones.</p>`,
+      },
+      {
+        n: '4', m: 2, kl: 'CO4 KL1',
+        q: 'Mention any two types of planning strategies.',
+        a: `<ol><li><b>Forward (progression) state-space planning</b>: search from the initial state, applying every applicable action until the goal holds.</li>
+<li><b>Backward (regression) state-space planning</b>: search from the goal, using only relevant actions: <code>g′ = (g − ADD(a)) ∪ PRE(a)</code>.</li></ol>
+<p>Others: partial-order planning (least commitment on ordering) and hierarchical task network (HTN) planning.</p>`,
+      },
+      {
+        n: '5', m: 2, kl: 'CO4 KL1',
+        q: 'Give an example for mutual exclusion.',
+        a: `<p>Two actions or literals are <b>mutually exclusive (mutex)</b> in a planning graph if they cannot occur or hold together.</p>
+<p><b>Example (have-cake).</b> <code>Eat(Cake)</code> deletes <code>Have(Cake)</code>, so <code>Eat(Cake)</code> and the persistence (no-op) of <code>Have(Cake)</code> are mutex (inconsistent effects). Hence <code>Have(Cake)</code> and <code>Eaten(Cake)</code> are mutex at level S₁, and the goal <code>Have ∧ Eaten</code> is not reachable until S₂.</p>
+<p>Simpler: <code>At(Robot, A)</code> and <code>At(Robot, B)</code> cannot both be true.</p>`,
+      },
+    ],
+  },
+  {
+    part: 'Part B: 2 × 16 = 32 marks',
+    qs: [
+      {
+        n: '6a', m: 16, kl: 'CO3 KL2',
+        q: 'Describe the Wumpus World environment and explain how an agent can use logic to survive in it.',
+        a: `<div data-w="vids:q-6a"></div>
+<div class="def"><b>Wumpus world.</b> A 4×4 cave of rooms. A monster (the wumpus) sits in one room, some rooms hold bottomless pits, and one room holds gold. The agent starts at [1,1], must grab the gold and climb out alive. It is the standard testbed for knowledge-based agents.</div>
+<h4>PEAS description (4 marks)</h4>
+<table><tr><th>Part</th><th>Wumpus world</th></tr>
+<tr><td>Performance</td><td>+1000 for climbing out with the gold, −1000 for death, −1 per action, −10 for using the arrow</td></tr>
+<tr><td>Environment</td><td>4×4 grid; agent starts at [1,1] facing right; wumpus, gold and pits placed at random (never at the start)</td></tr>
+<tr><td>Actuators</td><td>Forward, TurnLeft, TurnRight, Grab, Shoot (one arrow), Climb</td></tr>
+<tr><td>Sensors</td><td>Stench, Breeze, Glitter, Bump, Scream</td></tr></table>
+<h4>Percepts and properties (3 marks)</h4>
+<ul><li><b>Stench</b> in the wumpus room and the rooms next to it. <b>Breeze</b> in rooms next to a pit. <b>Glitter</b> where the gold is. <b>Bump</b> on hitting a wall. <b>Scream</b> when the wumpus dies.</li>
+<li>Environment: discrete, static, sequential, single agent, <b>partially observable</b> and deterministic.</li></ul>
+<h4>How the agent uses logic (6 marks)</h4>
+<p>The KB stores the rules of the world and every percept. For each square [x,y]:</p>
+<pre>B[x,y] ⇔ P[x+1,y] ∨ P[x−1,y] ∨ P[x,y+1] ∨ P[x,y−1]    (breeze iff a neighbour has a pit)
+S[x,y] ⇔ W[x+1,y] ∨ W[x−1,y] ∨ W[x,y+1] ∨ W[x,y−1]    (stench iff a neighbour has the wumpus)
+¬P[1,1], ¬W[1,1]                                        (start is safe)
+exactly one wumpus: W[1,1] ∨ … ∨ W[4,4], and ¬W[a] ∨ ¬W[b] for a ≠ b
+OK[x,y] ⇔ ¬P[x,y] ∧ ¬W[x,y]                             (safe room)</pre>
+<p>At each step the agent <code>TELL</code>s the percept, then <code>ASK</code>s which rooms are <code>OK</code>, and moves only to proven-safe rooms. <b>Absence of a percept is information:</b> no breeze at a room proves all four neighbours are pit-free.</p>
+<table><tr><th>Step</th><th>At</th><th>Percept</th><th>Deduction</th></tr>
+<tr><td>1</td><td>[1,1]</td><td>none</td><td>¬B, ¬S ⇒ [1,2] and [2,1] are safe</td></tr>
+<tr><td>2</td><td>[2,1]</td><td>Breeze</td><td>Pit at [2,2] or [3,1]. Go back to [1,1]</td></tr>
+<tr><td>3</td><td>[1,2]</td><td>Stench</td><td>Wumpus at [1,3] or [2,2]; ¬S[2,1] rules out [2,2], so wumpus at [1,3]. ¬B[1,2] rules out a pit at [2,2], so the pit is at [3,1]</td></tr>
+<tr><td>4</td><td>[2,2]</td><td>none</td><td>[2,3] and [3,2] are safe</td></tr>
+<tr><td>5</td><td>[2,3]</td><td>Glitter, Breeze, Stench</td><td>Grab the gold, return along safe rooms, Climb</td></tr></table>
+<div data-w="wumpus"></div>
+<h4>Limits (1 mark)</h4>
+<p>Propositional logic needs a rule per square (very many sentences); first-order logic is more compact. Logic cannot choose between two equally uncertain rooms, which needs probability.</p>`,
+      },
+      {
+        n: '6b(i)', m: 8, kl: 'CO3 KL2', or: true,
+        q: 'Discuss the significance and properties of knowledge representation.',
+        a: `<div class="def"><b>Knowledge representation (KR)</b> is the study of how to encode facts, rules and relationships about the world in a form a computer can store, reason with and use to decide what to do.</div>
+<h4>Significance (4 marks)</h4>
+<ul><li>An intelligent agent needs more than raw data: it must <b>store</b> what it knows, <b>derive</b> new facts and <b>act</b> on them.</li>
+<li>KR gives a formal language with defined meaning, so conclusions are precise and explainable.</li>
+<li>It separates knowledge from the program: the KB can be extended or corrected without rewriting the code.</li>
+<li>It is the basis of knowledge-based agents, expert systems and planning.</li></ul>
+<table><tr><th>Type of knowledge</th><th>Example</th></tr>
+<tr><td>Declarative (facts)</td><td>Delhi is the capital of India</td></tr>
+<tr><td>Procedural (how to)</td><td>Steps to solve a quadratic equation</td></tr>
+<tr><td>Heuristic</td><td>Check the fuel first when a car will not start</td></tr>
+<tr><td>Structural</td><td>A dog is a mammal and has four legs</td></tr></table>
+<h4>Properties of a good scheme (4 marks)</h4>
+<table><tr><th>Property</th><th>Meaning</th></tr>
+<tr><td>Representational adequacy</td><td>Can express all the knowledge needed</td></tr>
+<tr><td>Inferential adequacy</td><td>Can derive new knowledge from old</td></tr>
+<tr><td>Inferential efficiency</td><td>Can direct inference toward promising paths</td></tr>
+<tr><td>Acquisitional efficiency</td><td>New knowledge is easy to add</td></tr></table>
+<p>Techniques: logic (precise, sound inference), semantic networks (visual, inheritance), frames (defaults, grouped slots), production rules (modular, explainable).</p>`,
+      },
+      {
+        n: '6b(ii)', m: 8, kl: 'CO3 KL2', or: true,
+        q: 'Explicate the components of semantic networks.',
+        a: `<div class="def"><b>Semantic network.</b> A graph in which <b>nodes</b> represent concepts or objects and <b>labelled directed arcs</b> represent relations between them.</div>
+<h4>Components (4 marks)</h4>
+<table><tr><th>Component</th><th>Role</th><th>Example</th></tr>
+<tr><td>Nodes</td><td>Concepts (classes) and individual objects</td><td>Bird, Canary, Tweety</td></tr>
+<tr><td>Arcs (links)</td><td>Labelled relations between nodes</td><td>isa, instance, has, can</td></tr>
+<tr><td><b>isa / AKO</b> link</td><td>Class is a subclass of another class</td><td>Canary isa Bird</td></tr>
+<tr><td><b>instance</b> link</td><td>Object is a member of a class</td><td>Tweety instance Canary</td></tr>
+<tr><td>Property links</td><td>Attributes and parts</td><td>Bird can Fly; Animal has Skin</td></tr>
+<tr><td>Inheritance procedure</td><td>Follow isa and instance links upward until a value is found</td><td>Tweety can fly, because Bird can fly</td></tr></table>
+<div data-w="diag:semnet"></div>
+<h4>Working (3 marks)</h4>
+<p>Properties flow down isa and instance links. <i>Does Tweety have skin?</i> Tweety → Canary → Bird → Animal, and Animal has skin, so yes. <b>Exceptions</b> are stored lower in the hierarchy: Penguin cannot fly overrides the Bird default, and the lowest value found wins.</p>
+<h4>Advantages and limits (1 mark)</h4>
+<p>Natural, visual and efficient inheritance. But links have no standard semantics, and negation, disjunction and quantifiers are hard to express. Conversion to logic: <code>Canary(Tweety)</code>, <code>∀x Canary(x) → Bird(x)</code>.</p>`,
+      },
+      {
+        n: '7a(i)', m: 8, kl: 'CO4 KL3',
+        q: 'Illustrate the architecture and working of a simple planning agent.',
+        a: `<div class="def"><b>Simple planning agent.</b> An agent that perceives the world, builds a state description, formulates a goal, runs a planner to get a sequence of actions, then executes the plan one action at a time.</div>
+<div data-w="diag:agent"></div>
+<h4>Algorithm (4 marks)</h4>
+<pre>function SIMPLE-PLANNING-AGENT(percept) returns an action
+  static: KB, plan (initially empty), t = 0
+  TELL(KB, MAKE-PERCEPT-SENTENCE(percept, t))
+  current ← STATE-DESCRIPTION(KB, t)
+  if plan is empty then
+      G ← ASK(KB, MAKE-GOAL-QUERY(t))
+      plan ← IDEAL-PLANNER(current, G, KB)
+  if plan is empty or G is empty then action ← NoOp
+  else action ← FIRST(plan); plan ← REST(plan)
+  TELL(KB, MAKE-ACTION-SENTENCE(action, t))
+  t ← t + 1
+  return action</pre>
+<h4>Working (3 marks)</h4>
+<ol><li>Perceive and record the percept in the KB.</li><li>Compute the current state description.</li><li>If no plan exists, ask the KB for the goal and call the planner.</li><li>Execute the first action, keep the rest of the plan.</li><li>On later steps keep executing the stored plan.</li></ol>
+<h4>Limits (1 mark)</h4>
+<p>It assumes a deterministic, static world so the stored plan stays valid. If an action fails or the world changes the plan is wrong, which motivates execution monitoring and re-planning.</p>`,
+      },
+      {
+        n: '7a(ii)', m: 8, kl: 'CO4 KL2',
+        q: 'Elaborate the means-ends analysis with its algorithm and example.',
+        a: `<div class="def"><b>Means-ends analysis (MEA).</b> The strategy of the General Problem Solver (Newell and Simon). It finds the <b>difference</b> between the current state and the goal, picks an <b>operator</b> that reduces it, and recursively solves the sub-problems of satisfying the operator's preconditions and reaching the goal afterwards.</div>
+<h4>Algorithm (3 marks)</h4>
+<pre>MEA(current, goal):
+  if current = goal: return success
+  D ← most important difference between current and goal
+  O ← operator relevant to reducing D          (from the difference table)
+  if O's preconditions not true in current:
+      MEA(current, preconditions of O)         // sub-problem 1: make O applicable
+  apply O → new state
+  MEA(new state, goal)                         // sub-problem 2: continue to the goal</pre>
+<h4>Example: move a desk with two objects on it (4 marks)</h4>
+<table><tr><th>Operator</th><th>Preconditions</th><th>Reduces</th></tr>
+<tr><td>PUSH(obj, loc)</td><td>at(robot,obj) ∧ large(obj) ∧ clear(obj) ∧ armempty</td><td>object location</td></tr>
+<tr><td>CARRY(obj, loc)</td><td>at(robot,obj) ∧ small(obj)</td><td>object location</td></tr>
+<tr><td>WALK(loc)</td><td>none</td><td>robot location</td></tr>
+<tr><td>PICKUP / PUTDOWN</td><td>at(robot,obj) / holding(obj)</td><td>holding</td></tr>
+<tr><td>PLACE(o1, o2)</td><td>at(robot,o2) ∧ holding(o1)</td><td>on relation</td></tr></table>
+<ol><li>Difference: desk location. Operator <code>PUSH(desk, B)</code>.</li>
+<li>Its preconditions fail (robot not at the desk, desk not clear). Each unsatisfied precondition is a new difference.</li>
+<li>Sub-goals: <code>WALK(desk)</code>; move the objects off the desk (<code>PICKUP</code>, <code>PUTDOWN</code> or <code>CARRY</code>).</li>
+<li>Apply <code>PUSH(desk, B)</code>, then restore the objects with <code>PLACE</code>.</li></ol>
+<p><b>Blocks-world view.</b> Difference ON(A,B) is false → operator <code>STACK(A,B)</code> → new differences HOLDING(A) and CLEAR(B) → <code>PICKUP(A)</code>. Goal-stack planning is MEA specialised to STRIPS operators.</p>
+<p>Differences are ordered by importance, biggest first. Limits: not always optimal, and operators with interacting sub-goals (Sussman anomaly) can fail.</p>`,
+      },
+      {
+        n: '7b(i)', m: 8, kl: 'CO4 KL2', or: true,
+        q: 'Enumerate the properties of partial order planning.',
+        a: `<div class="def"><b>Partial-order planning (POP).</b> Searches the space of <b>plans</b> rather than states. A plan commits only to the ordering constraints that are needed; any total order consistent with them is a solution.</div>
+<h4>Properties (6 marks)</h4>
+<ol><li><b>Least commitment.</b> An order is chosen only when forced, so independent sub-goals (left sock, right sock) need no relative order.</li>
+<li><b>Plan-space search.</b> Nodes are partial plans, edges are plan refinements.</li>
+<li><b>A partial plan has four parts:</b> steps (always including Start and Finish), ordering constraints <code>A ≺ B</code>, causal links <code>A –p→ B</code>, and open preconditions.</li>
+<li><b>Causal links</b> protect a condition p from A to B.</li>
+<li><b>Threat resolution.</b> A step C that may delete p between A and B is resolved by <i>demotion</i> (C ≺ A) or <i>promotion</i> (B ≺ C); otherwise backtrack.</li>
+<li><b>Sound and complete</b> when searched systematically, and it avoids the Sussman anomaly.</li>
+<li><b>Flexible output.</b> Many linearizations, so steps can run in parallel (shoes and socks: 6 valid orders).</li></ol>
+<div data-w="diag:pop"></div>
+<h4>Algorithm (2 marks)</h4>
+<pre>initial plan: {Start, Finish}, Start ≺ Finish, open preconditions = goal
+loop:
+  if no open preconditions and no threats: return plan
+  pick an open precondition p of some step B
+  choose an action A (existing or new) that adds p
+  add causal link A –p→ B and order A ≺ B; add A's preconditions as open
+  resolve every threat by promotion or demotion; backtrack on inconsistency</pre>`,
+      },
+      {
+        n: '7b(ii)', m: 8, kl: 'CO4 KL2', or: true,
+        q: 'Explain the techniques used to handle dynamic environments and job shop scheduling problems.',
+        a: `<h4>Dynamic environments (4 marks)</h4>
+<p>Classical planning assumes a static, deterministic world. When the world changes during execution these techniques keep the agent working:</p>
+<table><tr><th>Technique</th><th>Idea</th></tr>
+<tr><td>Execution monitoring</td><td>Compare the observed state with the expected state after each action and detect failure or changed conditions</td></tr>
+<tr><td>Re-planning</td><td>Plan again from the current state (from scratch) or <b>repair</b> the old plan with a short detour. Example: corridor blocked, so GoToStairs then GoToRoom5</td></tr>
+<tr><td>Conditional planning</td><td>Plan branches for each contingency, with sensing actions to choose the branch at run time</td></tr>
+<tr><td>Reactive planning</td><td>Condition-action rules react immediately with no look-ahead</td></tr>
+<tr><td>Continuous planning</td><td>Interleave planning, execution and monitoring; goals can be added at any time</td></tr></table>
+<pre>plan ← PLANNER(state, goal)
+while plan not empty:
+    action ← FIRST(plan); execute(action); state ← observe()
+    if state ≠ expected: plan ← REPAIR(plan, state) or PLANNER(state, goal)
+    else plan ← REST(plan)</pre>
+<h4>Job-shop scheduling (4 marks)</h4>
+<p><b>Scheduling</b> is planning with time and resources. A <b>job-shop problem</b> has jobs, each a fixed sequence of actions with durations, competing for limited resources; the goal is a minimum <b>makespan</b>. It is NP-hard.</p>
+<ul><li><b>Plan first, then schedule:</b> a partial-order planner fixes actions and order; then durations and resources are added.</li>
+<li><b>Critical path method:</b> ES = earliest start; LS = latest start without delaying the finish; slack = LS − ES. Zero slack means the action is on the critical path.</li>
+<li><b>Resource constraints</b> (one engine hoist) stop actions overlapping.</li>
+<li><b>Heuristics:</b> least slack first, shortest or longest processing time, iterative repair.</li></ul>
+<table><tr><th>Car assembly</th><th>Dur.</th><th>ES</th><th>LS</th><th>Slack</th></tr>
+<tr><td>AddEngine1 → AddWheels1 → Inspect1</td><td>30, 30, 10</td><td>0, 30, 60</td><td>15, 45, 75</td><td>15</td></tr>
+<tr><td>AddEngine2 → AddWheels2 → Inspect2</td><td>60, 15, 10</td><td>0, 60, 75</td><td>0, 60, 75</td><td>0 (critical)</td></tr></table>
+<p>Critical path length = 60 + 15 + 10 = <b>85</b>. With one hoist, Engine1 runs 0–30 and Engine2 30–90, giving makespan <b>115</b>; starting Engine2 first gives 130. Order matters.</p>`,
+      },
+    ],
+  },
+  {
+    part: 'Part C: 1 × 8 = 8 marks',
+    qs: [
+      {
+        n: '8a', m: 8, kl: 'CO4 KL5',
+        q: 'Develop an algorithm for continuous planning enabling the robots to dynamically adjust their tasks and routes to handle new orders and unexpected obstacles in a smart warehouse.',
+        a: `<div class="def"><b>Continuous planning.</b> The agent never stops planning: it interleaves planning, execution and monitoring in one loop, so plans are extended and revised as orders arrive and the world changes. Only the near future is planned in detail.</div>
+<h4>Data (1 mark)</h4>
+<ul><li><code>MAP</code>: warehouse grid with blocked cells. <code>ORDERS</code>: queue of pick tasks. <code>PLAN[r]</code>: partial plan of each robot r (route plus task order).</li>
+<li>Operators: <code>MoveTo(cell)</code>, <code>Pick(item)</code>, <code>Drop(station)</code>, <code>Wait</code>.</li></ul>
+<h4>Algorithm (5 marks)</h4>
+<pre>loop forever:
+  percepts ← SENSE()                         // positions, new orders, blocked cells
+  UPDATE(MAP, ORDERS, robot states)
+
+  for each new order o in ORDERS:             // handle new orders
+      r ← robot with lowest cost to add o     (distance + queued load)
+      INSERT o into PLAN[r] at the position giving the shortest route
+      add o's preconditions as open sub-goals (reach shelf, pick, reach station)
+
+  for each robot r:
+      step ← FIRST(PLAN[r])
+      if step.preconditions hold and next cell is free (reservation table):
+          EXECUTE(step)
+      else if next cell blocked or reserved:   // unexpected obstacle
+          REPAIR(PLAN[r]): A* from current cell to the next waypoint
+                           avoiding blocked cells; keep the rest of the plan
+          if no route: reassign r's orders to other robots, or Wait
+      if observed state ≠ expected state:      // execution monitoring
+          REPAIR(PLAN[r])
+
+  REMOVE completed steps and orders
+  re-optimise task order of each partial plan (shorter route) when idle</pre>
+<h4>Example (1 mark)</h4>
+<p>Robot R1 carries order 1 to the packing station when order 2 arrives. The planner inserts order 2 on R1's route because it is on the way, so the pickup order is rearranged to shorten the trip. A corridor then becomes blocked: R1 replans locally with A* through the next aisle and keeps the rest of its plan.</p>
+<h4>Properties (1 mark)</h4>
+<p>Adapts to new goals and obstacles, and only replans the broken part. Limits: no global optimum, plans may oscillate, short-sighted choices and heavier computation; a reservation table avoids robot collisions.</p>`,
+      },
+      {
+        n: '8b', m: 8, kl: 'CO4 KL4', or: true,
+        q: 'Justify the effectiveness of the vacuum world environment in demonstrating the functioning of intelligent agents using a smart home vacuum robot in Artificial Intelligence.',
+        a: `<div data-w="vids:q-8b"></div>
+<div class="def"><b>Vacuum world.</b> The standard teaching environment for intelligent agents: squares A and B, each Clean or Dirty, and a vacuum agent that senses its location and local dirt and can move Left, Right or Suck. It has 2 × 2 × 2 = 8 states.</div>
+<h4>PEAS of the smart home vacuum robot (2 marks)</h4>
+<table><tr><th>Part</th><th>Smart home vacuum</th></tr>
+<tr><td>Performance</td><td>+1 per clean square per time step; small penalty per move and for battery use</td></tr>
+<tr><td>Environment</td><td>Rooms of the home (squares), dirt, furniture, pets, charging dock</td></tr>
+<tr><td>Actuators</td><td>Wheels (Left, Right), suction (Suck), NoOp / dock</td></tr>
+<tr><td>Sensors</td><td>Location sensor, dirt sensor, bump sensor, battery level</td></tr></table>
+<h4>Why it is effective for demonstrating agents (5 marks)</h4>
+<ol><li><b>Small and fully specified.</b> All 8 states and the percept-to-action table can be written out: <code>[A,Dirty]→Suck</code>, <code>[A,Clean]→Right</code>, <code>[B,Dirty]→Suck</code>, <code>[B,Clean]→Left</code>. It shows clearly what a percept, an action and an agent function are.</li>
+<li><b>Shows rationality.</b> Whether the agent is rational depends on the performance measure. Penalise movement and the shuttling reflex agent stops being rational, which separates a perfect agent from a rational one.</li>
+<li><b>One environment, every agent type.</b> Simple reflex (table above) → model-based (remembers which squares are clean, avoids shuttling) → goal-based (plans a cleaning route and a trip to the dock) → utility-based (trades battery against coverage) → learning (builds a map of the home).</li>
+<li><b>Environment properties can be varied.</b> Add a faulty Suck (stochastic), a local-only dirt sensor (partially observable), or dirt that reappears (dynamic) and see how the agent design must change.</li>
+<li><b>Maps directly to a real product.</b> Squares become rooms; dirt, bump and battery sensors match a smart home robot, so the lessons transfer.</li></ol>
+<h4>Limitation (1 mark)</h4>
+<p>It is a toy: it has no uncertainty about the rules, no knowledge base or other agents. Those are added by the Wumpus world (logic) and by multi-agent and continuous planning.</p>`,
+      },
+    ],
+  },
 ];
-export {PAPER};

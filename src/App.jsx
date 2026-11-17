@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { MODS } from './data/content.js';
 import { T, store } from './lib.js';
+import Visits from './components/Visits.jsx';
 import Tutor, { useTutor } from './components/Tutor.jsx';
 import { AllView, Home, PaperView, Topic } from './components/Views.jsx';
+import CourseSwitch from './components/CourseSwitch.jsx';
 
 const routeOf = () => {
   const id = (location.hash || '#home').slice(1);
@@ -11,8 +13,8 @@ const routeOf = () => {
 
 export default function App() {
   const [cur, setCur] = useState(routeOf);
-  const [done, setDone] = useState(() => new Set(store.get('toc-done', [])));
-  const [theme, setTheme] = useState(() => store.get('toc-theme', 'day'));
+  const [done, setDone] = useState(() => new Set(store.get('ai-done', [])));
+  const [theme, setTheme] = useState(() => store.get('ai-theme', 'day'));
   const [query, setQuery] = useState('');
   const [railOpen, setRailOpen] = useState(false);
   const search = useRef(null);
@@ -39,11 +41,11 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    store.set('toc-theme', theme);
+    store.set('ai-theme', theme);
   }, [theme]);
 
   useEffect(() => {
-    document.title = (topic ? topic.title + ' · ' : '') + 'TOC CAT-2 notes';
+    document.title = (topic ? topic.title + ' · ' : cur === 'paper' ? 'Last year’s paper · ' : '') + 'AI CAT-2 notes';
     setRailOpen(false);
     scrollTo(0, 0);
   }, [cur, topic]);
@@ -68,11 +70,11 @@ export default function App() {
     const next = new Set(done);
     next.has(id) ? next.delete(id) : next.add(id);
     setDone(next);
-    store.set('toc-done', [...next]);
+    store.set('ai-done', [...next]);
   };
 
   const f = query.trim().toLowerCase();
-  const crumb = cur === 'paper' ? 'Last year paper (Oct 2025)' : cur === 'all' ? 'All notes, one page' : topic ? `${MODS[topic.mod]}  /  ${topic.title}` : 'CAT-2 field notes';
+  const crumb = cur === 'paper' ? 'Last year’s paper (Oct 2025)' : cur === 'all' ? 'All notes, one page' : topic ? `${MODS[topic.mod]}  /  ${topic.title}` : 'CSD 3102 CAT-2 notes';
   const pct = Math.round((done.size / T.length) * 100);
   const sections = Object.keys(MODS)
     .map((m) => [m, T.filter((t) => t.mod === m && (!f || (t.title + ' ' + t.tags + ' ' + t.text).toLowerCase().includes(f)))])
@@ -80,17 +82,18 @@ export default function App() {
 
   return (
     <>
+      <a className="skip" href="#view">Skip to content</a>
       <div className="shell">
         <aside className={'rail' + (railOpen ? ' open' : '')} aria-label="Topics">
           <div className="brand" role="link" tabIndex={0} onClick={() => (location.hash = '#home')} onKeyDown={(e) => e.key === 'Enter' && (location.hash = '#home')}>
-            TOC CAT-2<small>CSD 3101 · Modules III–V</small>
+            AI CAT-2<small>CSD 3102 · Modules III and IV</small>
           </div>
           <div className="prog"><div className="bar"><i style={{ width: pct + '%' }} /></div><span>{done.size} of {T.length} topics done</span></div>
           <input ref={search} type="search" placeholder="Search topics and notes" aria-label="Search notes" value={query} onChange={(e) => setQuery(e.target.value)} />
           <nav className="nav">
             <h4>Revision</h4>
-            <a href="#paper" aria-current={cur === 'paper' ? 'page' : undefined}><span className="ck" style={{ borderRadius: 3 }} /><span>Last year paper + answers</span><span className="vh" /></a>
-            <a href="#all" aria-current={cur === 'all' ? 'page' : undefined}><span className="ck" style={{ borderRadius: 3 }} /><span>All notes, one page</span></a>
+            <a href="#paper" aria-current={cur === 'paper' ? 'page' : undefined}><span className="ck sq" /><span>Last year’s paper and answers</span><span className="vh" title="Very high priority" /></a>
+            <a href="#all" aria-current={cur === 'all' ? 'page' : undefined}><span className="ck sq" /><span>All notes, one page</span></a>
             {sections.map(([m, items]) => (
               <div key={m} style={{ display: 'contents' }}>
                 <h4>{MODS[m]}</h4>
@@ -111,13 +114,15 @@ export default function App() {
           <div className="top">
             <button className="btn" id="menu" aria-label="Open topics" onClick={() => setRailOpen(true)}>Topics</button>
             <div className="crumb">{crumb}</div>
+            <CourseSwitch current="ai" />
             <button className="btn sm" onClick={() => setTheme(theme === 'night' ? 'day' : 'night')}>{theme === 'night' ? 'Day paper' : 'Night paper'}</button>
             <button className="btn sm acct-top" onClick={tutor.acctClick}>{tutor.acct.label}</button>
             <button className="btn pri" onClick={() => tutor.setOpen(!tutor.open)}>Ask tutor</button>
           </div>
-          <article className="sheet" key={cur}>
+          <article className="sheet" id="view" key={cur}>
             {cur === 'paper' ? <PaperView /> : cur === 'all' ? <AllView /> : topic ? <Topic t={topic} done={done} onToggleDone={toggleDone} onPractice={tutor.practice} /> : <Home />}
           </article>
+          <footer className="foot"><Visits site="ai" /></footer>
         </main>
       </div>
       <Tutor tutor={tutor} />

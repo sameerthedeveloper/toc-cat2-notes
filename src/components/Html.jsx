@@ -1,16 +1,16 @@
-import { Vids, Stepper, PlGame, Amb, Pda, Tm, Tree } from './widgets.jsx';
-import { STEPS } from '../data/content.js';
+import { BlocksWorld, Chain, Diag, Gantt, Truth, Unify, Vids, Wumpus } from './widgets.jsx';
 
 const RE = /<div data-w="([^"]+)"><\/div>/g;
 
 function widget(key, k) {
+  if (key.startsWith('diag:')) return <Diag key={k} name={key.slice(5)} />;
   if (key.startsWith('vids:')) return <Vids key={k} id={key.slice(5)} />;
-  if (key.startsWith('steps:')) return <Stepper key={k} steps={STEPS[key.slice(6)]} />;
-  if (key.startsWith('tree:')) return <Tree key={k} name={key.slice(5)} />;
-  if (key === 'plgame') return <PlGame key={k} />;
-  if (key === 'pda') return <Pda key={k} />;
-  if (key === 'tm') return <Tm key={k} />;
-  if (key === 'ambig') return <Amb key={k} />;
+  if (key === 'wumpus') return <Wumpus key={k} />;
+  if (key === 'truth') return <Truth key={k} />;
+  if (key === 'unify') return <Unify key={k} />;
+  if (key === 'chain') return <Chain key={k} />;
+  if (key === 'bw') return <BlocksWorld key={k} />;
+  if (key === 'gantt') return <Gantt key={k} />;
   return null;
 }
 
