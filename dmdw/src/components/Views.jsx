@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { MODS } from '../data/content.js';
+import { PAPER } from '../data/paper.js';
 import { T } from '../lib.js';
 import Html from './Html.jsx';
 import { Bayes } from './widgets.jsx';
 
+const qid = (n) => 'q-' + n.replace(/\W/g, '');
 const btnLink = { textDecoration: 'none' };
 const MOD_NAME = (m) => MODS[m].split(' · ')[1];
 const MOD_NUM = (m) => MODS[m].split(' · ')[0];
@@ -33,6 +35,7 @@ export function Home() {
           <div className="row hero-cta">
             <a className="btn pri" href="#m3-3" style={btnLink}>Start with decision trees</a>
             <a className="btn" href="#m4-4" style={btnLink}>Start with k-means</a>
+            <a className="btn" href="#paper" style={btnLink}>Last year’s paper</a>
           </div>
         </div>
         <figure className="hero-cave">
@@ -59,10 +62,11 @@ export function Home() {
         </tbody>
       </table>
       <div className="tip"><b>Scoring.</b> For a numerical, write the formula, show each step, and state the result in a sentence. For a 16-mark theory answer give the idea, the algorithm, a diagram or example, then strengths and weaknesses.</div>
-      <div className="tip"><b>No past paper here yet.</b> This site has no solved CAT-2 paper because none was supplied. Send last year's DMDW paper and the answers will be added.</div>
+      <div className="tip"><b>Paper pattern.</b> October 2025 asked: supervised vs unsupervised, rule-based characteristics, prediction error measures, types of cluster data, outliers; then naive Bayes on a 5-row table, the confusion matrix, a decision tree for a healthcare table, hierarchical and grid-based clustering, outlier techniques; then kNN on height and weight, or SVM for review sentiment. Expect the same topics with different data.</div>
       <div className="tip"><b>AI tutor.</b> Open "Ask tutor" (top right). It reads the topic you are on, can quiz you, write fresh numericals and mark your answer. Sign in with a free Puter account on first use.</div>
       <div className="pager">
-        <a className="btn pri" href="#all" style={btnLink}>All notes on one page</a>
+        <a className="btn" href="#all" style={btnLink}>All notes on one page</a>
+        <a className="btn pri" href="#paper" style={btnLink}>Last year’s paper with answers</a>
       </div>
     </>
   );
@@ -105,11 +109,42 @@ export function Topic({ t, done, onToggleDone, onPractice }) {
   );
 }
 
+export function PaperView() {
+  const all = PAPER.flatMap((p) => p.qs);
+  return (
+    <>
+      <div className="meta"><span className="mod">CSD 3104 · CAT-2 · 30 October 2025 · 50 marks · 90 minutes</span></div>
+      <h1>Last year’s paper with full answers</h1>
+      <p>Every question from the paper, solved the way you should write it. Questions marked OR are alternatives: you answer one of each pair. The marks beside each answer show how the 8 or 16 marks are usually split.</p>
+      <div className="tip"><b>What it tells you.</b> Part A is short definitions from both modules. Part B is numerical-heavy: naive Bayes, a decision tree and the confusion matrix from Module III, hierarchical and grid-based clustering and outliers from Module IV. Part C is a classification problem (kNN or SVM). Practise the tables until the arithmetic is automatic.</div>
+      <ol className="order">
+        {all.map((q) => (
+          <li key={q.n}><a href={'#' + qid(q.n)}>Q{q.n}</a><span className="tag">{q.m} marks</span></li>
+        ))}
+      </ol>
+      {PAPER.map((p) => (
+        <div key={p.part} style={{ display: 'contents' }}>
+          <h2>{p.part}</h2>
+          {p.qs.map((q) => (
+            <details key={q.n} className="qa" id={qid(q.n)} open>
+              <summary>
+                <span className="mk">Q{q.n} · {q.m}</span>
+                <span>{q.or ? 'OR: ' : ''}{q.q} <span className="kl">{q.kl}</span></span>
+              </summary>
+              <div className="ans"><Html html={q.a} /></div>
+            </details>
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export function AllView() {
   return (
     <>
       <h1>All notes, one page</h1>
-      <p>Every topic, worked example and 2/5/8/16-mark answer in one scroll. Use Ctrl+F to find anything.</p>
+      <p>Every topic, worked example and 2/5/8/16-mark answer in one scroll, then last year’s paper. Use Ctrl+F to find anything.</p>
       <div className="row">
         <button className="btn pri" onClick={() => print()}>Print or save as PDF</button>
       </div>
@@ -131,6 +166,7 @@ export function AllView() {
           <hr className="rule" />
         </section>
       ))}
+      <section className="all-sec"><PaperView /></section>
     </>
   );
 }

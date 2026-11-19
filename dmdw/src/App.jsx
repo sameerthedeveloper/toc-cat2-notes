@@ -4,11 +4,11 @@ import { T, store } from './lib.js';
 import CourseSwitch from './components/CourseSwitch.jsx';
 import Visits from './components/Visits.jsx';
 import Tutor, { useTutor } from './components/Tutor.jsx';
-import { AllView, Home, Topic } from './components/Views.jsx';
+import { AllView, Home, PaperView, Topic } from './components/Views.jsx';
 
 const routeOf = () => {
   const id = (location.hash || '#home').slice(1);
-  return id === 'all' || T.some((t) => t.id === id) ? id : 'home';
+  return id === 'all' || id === 'paper' || T.some((t) => t.id === id) ? id : 'home';
 };
 
 export default function App() {
@@ -45,7 +45,7 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    document.title = (topic ? topic.title + ' · ' : '') + 'DMDW CAT-2 notes';
+    document.title = (topic ? topic.title + ' · ' : cur === 'paper' ? 'Last year’s paper · ' : '') + 'DMDW CAT-2 notes';
     setRailOpen(false);
     scrollTo(0, 0);
   }, [cur, topic]);
@@ -74,7 +74,7 @@ export default function App() {
   };
 
   const f = query.trim().toLowerCase();
-  const crumb = cur === 'all' ? 'All notes, one page' : topic ? `${MODS[topic.mod]}  /  ${topic.title}` : 'CSD 3104 CAT-2 notes';
+  const crumb = cur === 'paper' ? 'Last year’s paper (Oct 2025)' : cur === 'all' ? 'All notes, one page' : topic ? `${MODS[topic.mod]}  /  ${topic.title}` : 'CSD 3104 CAT-2 notes';
   const pct = Math.round((done.size / T.length) * 100);
   const sections = Object.keys(MODS)
     .map((m) => [m, T.filter((t) => t.mod === m && (!f || (t.title + ' ' + t.tags + ' ' + t.text).toLowerCase().includes(f)))])
@@ -92,6 +92,7 @@ export default function App() {
           <input ref={search} type="search" placeholder="Search topics and notes" aria-label="Search notes" value={query} onChange={(e) => setQuery(e.target.value)} />
           <nav className="nav">
             <h4>Revision</h4>
+            <a href="#paper" aria-current={cur === 'paper' ? 'page' : undefined}><span className="ck sq" /><span>Last year’s paper and answers</span><span className="vh" title="Very high priority" /></a>
             <a href="#all" aria-current={cur === 'all' ? 'page' : undefined}><span className="ck sq" /><span>All notes, one page</span></a>
             {sections.map(([m, items]) => (
               <div key={m} style={{ display: 'contents' }}>
@@ -119,7 +120,7 @@ export default function App() {
             <button className="btn pri" onClick={() => tutor.setOpen(!tutor.open)}>Ask tutor</button>
           </div>
           <article className="sheet" id="view" key={cur}>
-            {cur === 'all' ? <AllView /> : topic ? <Topic t={topic} done={done} onToggleDone={toggleDone} onPractice={tutor.practice} /> : <Home />}
+            {cur === 'paper' ? <PaperView /> : cur === 'all' ? <AllView /> : topic ? <Topic t={topic} done={done} onToggleDone={toggleDone} onPractice={tutor.practice} /> : <Home />}
           </article>
           <footer className="foot"><Visits site="dmdw" /></footer>
         </main>
