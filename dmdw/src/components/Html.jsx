@@ -1,9 +1,10 @@
-import { Bayes, Bin, Bp, Dbscan, Diag, Hier, Kmeans, Knn, Metrics, Out, Svm, Tree } from './widgets.jsx';
+import { Bayes, Bin, Bp, Dbscan, Diag, Hier, Kmeans, Knn, Metrics, Out, Svm, Tree, Vids } from './widgets.jsx';
 
 const RE = /<div data-w="([^"]+)"><\/div>/g;
 
 function widget(key, k) {
   if (key.startsWith('diag:')) return <Diag key={k} name={key.slice(5)} />;
+  if (key.startsWith('vids:')) return <Vids key={k} id={key.slice(5)} />;
   const W = { tree: Tree, bayes: Bayes, knn: Knn, metrics: Metrics, kmeans: Kmeans, hier: Hier, dbscan: Dbscan, bp: Bp, svm: Svm, bin: Bin, out: Out }[key];
   return W ? <W key={k} /> : null;
 }

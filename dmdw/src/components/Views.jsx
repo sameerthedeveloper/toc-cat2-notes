@@ -3,7 +3,8 @@ import { MODS } from '../data/content.js';
 import { PAPER } from '../data/paper.js';
 import { T } from '../lib.js';
 import Html from './Html.jsx';
-import { Bayes } from './widgets.jsx';
+import { YT } from '../data/videos.js';
+import { Bayes, NoVideo, Vids } from './widgets.jsx';
 
 const qid = (n) => 'q-' + n.replace(/\W/g, '');
 const btnLink = { textDecoration: 'none' };
@@ -15,6 +16,8 @@ const Tag = ({ t }) => <span className={'tag' + (t.pr === 'Very High' ? ' vh' : 
 const Meta = ({ t }) => (
   <div className="meta"><span className="mod">{MOD_NUM(t.mod)}: {MOD_NAME(t.mod)}</span><Prio t={t} /></div>
 );
+
+const Lessons = ({ id }) => (YT[id] ? <Vids id={id} /> : <NoVideo />);
 
 const SEQ = [
   ['Classification and prediction', 'm3-1'], ['Issues in classification', 'm3-2'], ['Decision trees', 'm3-3'], ['Bayesian classification', 'm3-4'], ['Rule-based classification', 'm3-5'],
@@ -63,6 +66,7 @@ export function Home() {
       </table>
       <div className="tip"><b>Scoring.</b> For a numerical, write the formula, show each step, and state the result in a sentence. For a 16-mark theory answer give the idea, the algorithm, a diagram or example, then strengths and weaknesses.</div>
       <div className="tip"><b>Paper pattern.</b> October 2025 asked: supervised vs unsupervised, rule-based characteristics, prediction error measures, types of cluster data, outliers; then naive Bayes on a 5-row table, the confusion matrix, a decision tree for a healthcare table, hierarchical and grid-based clustering, outlier techniques; then kNN on height and weight, or SVM for review sentiment. Expect the same topics with different data.</div>
+      <div className="tip"><b>Videos.</b> Every topic page opens with video lessons and so do most paper answers. Mahesh Huddar is the main source (solved examples for decision trees, naive Bayes, kNN, backpropagation, SVM, k-means, hierarchical clustering, DBSCAN, outliers); Trouble-Free covers the theory in syllabus order; a few Tamil lessons from 4G Silver Academy and other channels fill gaps, and each video shows its channel.</div>
       <div className="tip"><b>AI tutor.</b> Open "Ask tutor" (top right). It reads the topic you are on, can quiz you, write fresh numericals and mark your answer. Sign in with a free Puter account on first use.</div>
       <div className="pager">
         <a className="btn" href="#all" style={btnLink}>All notes on one page</a>
@@ -81,6 +85,7 @@ export function Topic({ t, done, onToggleDone, onPractice }) {
     <>
       <Meta t={t} />
       <h1>{t.title}</h1>
+      <Lessons id={t.id} />
       <Html html={t.body} />
       <hr className="rule" />
       <h2>Exam questions</h2>
@@ -155,6 +160,7 @@ export function AllView() {
         <section key={t.id} className="all-sec">
           <Meta t={t} />
           <h1>{t.title}</h1>
+          <Lessons id={t.id} />
           <Html html={t.body} />
           <h2>Exam questions</h2>
           {t.qa.map((q, j) => (
