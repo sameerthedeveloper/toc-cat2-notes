@@ -1,13 +1,14 @@
-# CAT-2 notes: AI, Theory of Computation, Network Security, Data Mining
+# Exam notes: AI, Theory of Computation, Network Security, Data Mining, Virtualization
 
-Four revision-notes sites in one repo, React + Vite, with the same paper-and-grid look.
+Five revision-notes sites in one repo, React + Vite, with the same paper-and-grid look.
 
 - `/` Artificial Intelligence Techniques (CSD 3102), Modules III and IV
 - `/toc/` Theory of Computation (CSD 3101), Modules III to V
 - `/nsc/` Network Security and Cryptography (CSD 3103), Modules III and IV: RSA, Diffie–Hellman, ECC, MAC, hashes, signatures, live calculators, Oct 2025 paper solved. Videos: Neso Academy (number theory), 4G Silver Academy (Tamil), and other channels for MAC, MD5 and SHA.
 - `/dmdw/` Data Mining and Data Warehousing (CSD 3104), Modules III and IV: decision trees, naive Bayes, backpropagation, SVM, evaluation measures, k-means, hierarchical, DBSCAN, outliers, with live calculators, the Oct 2025 paper solved, and video lessons (Mahesh Huddar, Trouble-Free and others).
+- `/virt/` Virtualization Technology, Modules IV and V: CPU, memory, storage and network management for a VM (VMware, Hyper-V, KVM), with calculators and the study material's practice questions answered. No videos yet.
 
-The **AI / TOC / NSC / DMDW** dropdown in the top bar switches between them.
+The **AI / TOC / NSC / DMDW / VIRT** dropdown in the top bar switches between them.
 
 ```bash
 npm install

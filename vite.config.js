@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 
-// Four pages in one site: "/" is the AI notes, "/toc/" Theory of Computation, "/nsc/" Network Security and Cryptography, "/dmdw/" Data Mining and Data Warehousing.
+// Five pages in one site: "/" is the AI notes, "/toc/" Theory of Computation, "/nsc/" Network Security and Cryptography, "/dmdw/" Data Mining and Data Warehousing, "/virt/" Virtualization Technology.
 export default defineConfig({
   base: './',
   plugins: [react()],
@@ -13,6 +13,7 @@ export default defineConfig({
         toc: resolve(__dirname, 'toc/index.html'),
         nsc: resolve(__dirname, 'nsc/index.html'),
         dmdw: resolve(__dirname, 'dmdw/index.html'),
+        virt: resolve(__dirname, 'virt/index.html'),
       },
     },
   },
